@@ -14,15 +14,16 @@
         <span aria-hidden="true">&times;</span>
     </div>
     {% endfor %}
-    
-    <h1>Welcome !</h1>
 
     {% if user.is_authenticated %}
-    <h3>Hello {{uname}}</h3>
-    <h4>You're In</h4>
+    <h3>Hello {{ name }}</h3>
+    <h4>You're In . Welcome to the Project</h4>
+    <h1>Website Will be Shown Here</h1>
     <button type="submit"><a href="/signout">signout</a></button>
 
     {% else %}
+    <h1>Welcome To IOT Major Project !</h1>
+    <h2>Sign Up / Sign in to Access the Website</h2>
     <button type="submit"><a href="/signup">signup</a></button>
     <button type="submit"><a href="/signin">signin</a></button>
 
