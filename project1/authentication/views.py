@@ -5,11 +5,77 @@ from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 from auth import settings
 from django.core.mail import send_mail
-from email.message import EmailMessage
-from django.utils.http import urlsafe_base64_decode
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+import statistics
+from scipy.stats import kurtosis
+import math
+
 # Create your views here.
+def rmsValue(arr, n):
+    square = 0
+    mean = 0.0
+    root = 0.0
+     
+    #Calculate square
+    for i in range(0,n):
+        square += (arr[i]**2)
+     
+    #Calculate Mean
+    mean = (square / (float)(n))
+     
+    #Calculate Root
+    root = math.sqrt(mean)
+     
+    return root
+# Graph plot section
+    # plt.style.use('bmh')
+    # plt.plot(csv["value"])
+
+def graph(request):
+    # Create the graph using Matplotlib
+    file="./static/data/HL29.csv"
+    csv=pd.read_csv(file)
+    plt.plot(csv)
+    plt.ylabel('value')
+
+    # Save the figure to a file
+    plt.savefig('static/graph.png')
+
+    # Construct the HTML string for the image tag
+    html = f"<img src='{{% static 'graph.png' %}}'>"
+    print(html)
+    # Return an HttpResponse with the HTML string as the content
+    return HttpResponse(html)
+
+
 def home(request):
-    return render(request,"authentication/index.html")
+    # print(os.getcwd())
+    file="./static/data/HL29.csv"
+    csv=pd.read_csv(file)
+    arr=csv["value"]
+    mean=round(sum(arr)/len(arr),10)
+    mini=round(min(arr),10)
+    std=round(statistics.stdev(arr),10)
+    skw=round(arr.skew(axis=0,skipna=True),10)
+    maxi=round(max(arr),10)
+    rms=round(rmsValue(arr,len(arr)),10)
+    kt=round(kurtosis(arr, fisher=False),10)
+    
+    plt.plot(csv)
+    plt.ylabel('value')
+
+    # Save the figure to a file
+    plt.savefig('static/graph.png')
+
+    # Construct the HTML string for the image tag
+    html = f"<img src='{{% static 'graph.png' %}}'>"
+    print(html)
+
+    return render(request,"authentication/index.html",{"mean":mean,"min":mini,"std":std,"skw":skw,
+    "max":maxi,"rms":rms,"Kutosis":kt,"val":settings.CB,"graph":html})
+ 
 def signup(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -44,7 +110,7 @@ def signup(request):
         #Email Welcome
 
         subject = "welcome to iot major project!"
-        message = "Hello "+ myuser.name +"!! \n Please confirm email address"
+        message = "Hello "+ myuser.name +"!! \n Welcome to iot Major Project \n You can now Access the IOT Major Project Website with the credintials you entered on sign up Time ! \n Have a Good Day !"
         from_email =settings.EMAIL_HOST_USER
         to_list = [myuser.email]
         send_mail(subject,message,from_email,to_list,fail_silently=True)
@@ -68,18 +134,12 @@ def signin(request):
 def signout(request):
     logout(request)
     messages.success(request,"Logged out")
-    return redirect('home')         
+    return redirect('home')           
 
-def activate(request,uidb64,token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        myuser=User.objects.get(pk=uid)
-    except (TypeError,ValueError,OverflowError,User.DoesNotExist):
-        myuser=None
-    if myuser is not None and generate_token.check_token(myuser, token):
-        myuser.is_active=True   
-        myuser.save()
-        login(request,myuser)
-        return redirect('home')
-    else:
-        return render(request,'activation_failed.html ')    
+
+from datetime import datetime
+
+def current_time(request):
+    now = datetime.now()
+    html = f"<html><body>It is now {now}.</body></html>"
+    return HttpResponse(html)   

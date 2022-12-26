@@ -6,5 +6,6 @@ urlpatterns = [
     path('signup',views.signup,name="signup"),
     path('signin',views.signin,name="signin"),
     path('signout',views.signout,name="signout"),
-    path('activate/<uidb64>/<token>',views.activate, name="activate"),
+    path('current_time',views.current_time,name="current_time"),
+    path('graph',views.graph,name="graph"),
 ]
