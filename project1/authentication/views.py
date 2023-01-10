@@ -14,6 +14,7 @@ import math
 from .models import *
 import cv2,threading
 from django.http import StreamingHttpResponse
+import requests, time,json 
 # Create your views here.
 
 def rmsValue(arr, n):
@@ -94,8 +95,16 @@ def home(request):
         btnText="Turn ON" 
         color="black"
     
-    return render(request,"authentication/index.html",{"mean":mean,"min":mini,"std":std,"skw":skw,
-    "max":maxi,"rms":rms,"Kutosis":kt,"val":settings.CB,"mos":machineOnOffStatusText,"bt":btnText,"color":color})
+    # Connecting to thingspeak and getting data from it
+    url = "https://api.thingspeak.com/channels/2002930/feeds.json?api_key=HO1K3PSOT931SJ1B&results=2"
+    while True:
+        response = requests.get(url)
+        data = response.json()
+        field1_value = data["feeds"][0]["field1"]
+        print(field1_value)
+        return render(request,"authentication/index.html",{"mean":mean,"min":mini,"std":std,"skw":skw,
+        "max":maxi,"rms":rms,"Kutosis":kt,"val":settings.CB,"mos":machineOnOffStatusText,"bt":btnText,
+        "color":color,'thingspeak_data': field1_value})
 
 def signup(request):
     if request.method == "POST":
