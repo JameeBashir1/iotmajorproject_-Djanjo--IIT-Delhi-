@@ -1,3 +1,4 @@
+<!-- Jamee Bashir -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,7 +50,7 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
-                <div id="navbarRightPart" class="collapse navbar-collapse" id="navbarNav">
+                <div style="position: relative;left: 100%;" id="navbarRightPart" class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item active">
                     <a  class="nav-link" href="#">Home</a>
@@ -61,9 +62,6 @@
                     <a class="nav-link" href="#">Data</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Real-Time Videos</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="#">Logout</a>
                     </li>    
                 </ul>
@@ -73,7 +71,6 @@
         </div>
 
         <div id="body">
-            <!-- Jamee Bashir -->
             <!-- Body Starts Here -->
             <h1 id="bodyHeading" style="font-family: 'Roboto Mono', monospace;">AiOT BASED CONDITION MONITORING</h1>
             <h3 class="bodyHeadingDiscription">Fault Prediction on Rotating Machines</h3><br><br>
@@ -99,24 +96,32 @@
                         <h1 style="padding: 2%;">Fault Prediction (M-1)</h1>
                         <h3 style="position: relative;left: 7%;top: 3%;">Machine Health Goes Here</h3>
                         <h3 style="position: relative; top: 15%;left: 7%;">Machine Status : </h3>
-                        <script type="text/javascript">
-                            function togg(){
-                                console.log("clicked!");
-                            }
-                        </script>
-                        <div style="position: relative;left: 60%; top: 3%;" class="onoffSwitch">
-                            <!-- Machine On Off Button Starts Here -->
-                            <label class="switch">
-                                <form action="{% url 'home' %}" method="post" onchange="this.form.submit()">
-                                    {% csrf_token %}
-                                <input type="checkbox" {{val}}>
-                                <span class="slider round"></span>
-                                </form>
-                            </label>
-                            <!-- Machine on Off BUtton Ends Here -->
+                            <!-- Machine On Off Button Starts Here -->   
+                        <div class="onoffSwitch"style=" cursor: pointer; position: relative;left: 60%; top: 4%;">
+                            <span id="machineStatusOnOffText" style="color: white;
+                                padding: 8px;background-color: {{color}}; border-radius: 25px;" class="label success">{{mos}}</span>
+                            <button onclick="togg()" id="btnTextTurnOnTurnOff" style="position:relative; top:-10%;left:3%; z-index: 20;" type="button" class="btn btn-outline-primary" name="machineBtn">{{bt}}</button>
                         </div>
+                        <script>
+                            x=document.getElementById("machineStatusOnOffText");
+                            y=document.getElementById("btnTextTurnOnTurnOff");
+                            // console.log(x.innerHTML);
+                            function togg(){
+                                if(x.innerHTML=="ON"){
+                                    x.innerHTML="OFF";
+                                    y.innerHTML="Turn ON";
+                                    x.style.backgroundColor = "black";
+                                }
+                                else{
+                                    x.innerHTML="ON";
+                                    y.innerHTML="Turn OFF";
+                                    x.style.backgroundColor="#04AA6D";
+                                }
+                            }
+                        </script> 
+                            <!-- Machine on Off BUtton Ends Here -->
                         <!--digital clock start-->
-                        <div style="position: relative; left: 8%;top: 20%;" class="datetime">
+                        <div style="position: relative; left: 8%;top: 10%;" class="datetime">
                             <div class="date">
                             <span id="dayname">Day</span>,
                             <span id="month">Month</span>
@@ -202,10 +207,36 @@
                 </div>
 
             </div>
+            <br><br>
+            <div id="camera">
+                <!-- Card Camera Starts Here -->
+                <div class="card" style="width: 35rem; height: 30rem; position: relative; left: -4.5%;">
+                    <h1 style="padding-left: 10%;">Live Camera Machine 1</h1>
+                    <video autoplay="true" id="videoElement" style="width: 40rem; height: 25rem; position: relative; left: -7%; top: 2%;">
+
+                    </video>
+                </div>
+                <script>
+                    let video= document.querySelector("#videoElement");
+                    if(navigator.mediaDevices.getUserMedia){
+                        navigator.mediaDevices.getUserMedia({video:true})
+                        .then(function(stream){
+                            video.srcObject=stream;
+                        })
+                        .catch(function(error){
+                            console.log("Something went wrong !")
+                        })
+                    }
+                    else{
+                        console.log("Not Supported Media")
+                    }
+                </script>
+                <!-- Card Camera Ends Here -->
+            </div>
             <!-- Body Ends Here -->
         </div>
     <!-- Site footer -->
-    <footer style="position: absolute; top: 95%;left: 8%; background-color: white;" class="site-footer">
+    <footer style="position: absolute; top: 153%;left: 8%; background-color: white;" class="site-footer">
         <!-- Footer Starts Here -->
         <div class="container">
           <div class="row">
@@ -247,8 +278,7 @@
         <!-- Footer Ends Here -->
     </footer>
     </div>
-
-    {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-</body>
+    {% endif %}
+    </body>
 </html>

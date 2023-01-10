@@ -11,8 +11,11 @@ import os
 import statistics
 from scipy.stats import kurtosis
 import math
-
+from .models import *
+import cv2,threading
+from django.http import StreamingHttpResponse
 # Create your views here.
+
 def rmsValue(arr, n):
     square = 0
     mean = 0.0
@@ -33,21 +36,21 @@ def rmsValue(arr, n):
     # plt.style.use('bmh')
     # plt.plot(csv["value"])
 
-def graph(request):
-    # Create the graph using Matplotlib
-    file="./static/data/HL29.csv"
-    csv=pd.read_csv(file)
-    plt.plot(csv)
-    plt.ylabel('value')
+# def graph(request):
+#     # Create the graph using Matplotlib
+#     file="./static/data/HL29.csv"
+#     csv=pd.read_csv(file)
+#     plt.plot(csv)
+#     plt.ylabel('value')
 
-    # Save the figure to a file
-    plt.savefig('static/graph.png')
+#     # Save the figure to a file
+#     plt.savefig('static/graph.png')
 
     # Construct the HTML string for the image tag
-    html = f"<img src='{{% static 'graph.png' %}}'>"
-    print(html)
+    # html = f"<img src='{{% static 'graph.png' %}}'>"
+    # print(html)
     # Return an HttpResponse with the HTML string as the content
-    return HttpResponse(html)
+    # return HttpResponse(html)
 
 
 def home(request):
@@ -62,20 +65,38 @@ def home(request):
     maxi=round(max(arr),10)
     rms=round(rmsValue(arr,len(arr)),10)
     kt=round(kurtosis(arr, fisher=False),10)
-    
-    plt.plot(csv)
-    plt.ylabel('value')
 
-    # Save the figure to a file
-    plt.savefig('static/graph.png')
+    # Turn off interactive mode
+    # plt.ioff()
+
+    # plt.ylabel('value') 
+    # plt.plot(csv)
+    # #Save the figure to a file
+    # plt.savefig('static/graph.png')
 
     # Construct the HTML string for the image tag
-    html = f"<img src='{{% static 'graph.png' %}}'>"
-    print(html)
+    #html = f"<img src='{{% static 'graph.png' %}}'>"
+    #print(html)
+    
 
+    # Getting Machine Result Value From DataBase
+    #x=Score.objects.latest('datetime')
+    machineOnOffStatus = Score.objects.order_by('-pk').first().result
+    machineOnOffStatusText=""
+    btnText=""
+    color=""
+    if(machineOnOffStatus ==1 ):
+        machineOnOffStatusText="ON"
+        btnText="Turn OFF"
+        color="#04AA6D"
+    else : 
+        machineOnOffStatusText="OFF" 
+        btnText="Turn ON" 
+        color="black"
+    
     return render(request,"authentication/index.html",{"mean":mean,"min":mini,"std":std,"skw":skw,
-    "max":maxi,"rms":rms,"Kutosis":kt,"val":settings.CB,"graph":html})
- 
+    "max":maxi,"rms":rms,"Kutosis":kt,"val":settings.CB,"mos":machineOnOffStatusText,"bt":btnText,"color":color})
+
 def signup(request):
     if request.method == "POST":
         username = request.POST['username']
