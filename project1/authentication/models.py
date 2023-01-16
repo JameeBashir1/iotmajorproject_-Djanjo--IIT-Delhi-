@@ -18,12 +18,12 @@ class Score(models.Model):
                 m=f'Machine Has Been Turned ON !'
             else :
                 m=f'Machine Has Been Turned OFF !'    
-            account_sid ='ACcc194042bea22097bb3f699e05e8ee97'
-            auth_token = '5ffef1567773f4945f5aa13b46357e16'
+            account_sid ='account_sid'
+            auth_token = 'auth_token'
             client = Client(account_sid,auth_token)
             message =client.messages.create(
                 body=m,
-                from_='+14582148167',
+                from_='number',
                 to='+918899858191'
             )
             print(message.sid)
